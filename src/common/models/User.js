@@ -10,23 +10,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  partnerUserAcctId: {
-    type: String,
-    default: uuidv4,
-  },
-  partnerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
+  // partnerUserAcctId: {
+  //   type: String,
+  //   default: uuidv4,
+  // },
+  // partnerId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  // },
 });
 
 userSchema.methods.toString = function () {
   return `User:
     userId: ${this.userId}
-    gcpsUserAcctId: ${this.gcpsUserAcctId}
-    partnerUserAcctId: ${this.partnerUserAcctId}
-    partnerId: ${this.partnerId}`;
+    gcpsUserAcctId: ${this.gcpsUserAcctId}`;
 };
+//  partnerUserAcctId: ${this.partnerUserAcctId}
+//  partnerId: ${this.partnerId}`;
 
 const User = mongoose.model('User', userSchema);
 
