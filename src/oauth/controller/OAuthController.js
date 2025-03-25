@@ -7,6 +7,10 @@ const { v4: uuidv4 } = require('uuid');
 const userService = new UserService();
 const userAccessTokenService = new UserAccessTokenService();
 
+router.get('/connect/garmin', (req, res) => {
+  res.redirect('/connect/garmin');
+});
+
 router.get('/handle_garmin_callback', async (req, res) => {
   try {
     console.log('Session:', req.session);
