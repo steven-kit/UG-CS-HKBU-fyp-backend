@@ -10,9 +10,9 @@ router.get('/test', (req, res) => {
   res.send('Hello. This test endpoint is working');
 });
 
-router.get('/activities', (req, res) => {
-  console.log('Activities endpoint backfill notification');
-  backfillObject.summaryTitle = Consts.ACTIVITIES;
+router.get('/stress', (req, res) => {
+  console.log('Stress endpoint backfill notification');
+  backfillObject.summaryTitle = Consts.STRESS;
   backfillObject.userAccessToken = req.query.uat;
   backfillObject.summaryStartTime = req.query.startTime;
   backfillObject.summaryEndTime = req.query.endTime;
@@ -22,9 +22,9 @@ router.get('/activities', (req, res) => {
     .catch(error => res.status(500).send(error));
 });
 
-router.get('/bodycompositions', (req, res) => {
-  console.log('Body compositions endpoint backfill notification');
-  backfillObject.summaryTitle = Consts.BODYCOMPS;
+router.get('/activities', (req, res) => {
+  console.log('Activities endpoint backfill notification');
+  backfillObject.summaryTitle = Consts.ACTIVITIES;
   backfillObject.userAccessToken = req.query.uat;
   backfillObject.summaryStartTime = req.query.startTime;
   backfillObject.summaryEndTime = req.query.endTime;
@@ -57,30 +57,5 @@ router.get('/epochs', (req, res) => {
     .then(response => res.send(response))
     .catch(error => res.status(500).send(error));
 });
-
-router.get('/sleep', (req, res) => {
-  console.log('Sleep endpoint backfill notification');
-  backfillObject.summaryTitle = Consts.SLEEPS;
-  backfillObject.userAccessToken = req.query.uat;
-  backfillObject.summaryStartTime = req.query.startTime;
-  backfillObject.summaryEndTime = req.query.endTime;
-
-  backfillService.handleBackfillRequest(backfillObject)
-    .then(response => res.send(response))
-    .catch(error => res.status(500).send(error));
-});
-
-router.get('/stress', (req, res) => {
-  console.log('Stress endpoint backfill notification');
-  backfillObject.summaryTitle = Consts.STRESS;
-  backfillObject.userAccessToken = req.query.uat;
-  backfillObject.summaryStartTime = req.query.startTime;
-  backfillObject.summaryEndTime = req.query.endTime;
-
-  backfillService.handleBackfillRequest(backfillObject)
-    .then(response => res.send(response))
-    .catch(error => res.status(500).send(error));
-});
-
 
 module.exports = router;

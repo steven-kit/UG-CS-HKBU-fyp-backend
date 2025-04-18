@@ -2,14 +2,12 @@ const axios = require('axios');
 const Consts = require('../common/Consts'); 
 const UserAccessTokenService = require('../common/services/UserAccessTokenService');
 const UserService = require('../common/services/UserService');
-const PartnerService = require('../common/services/PartnerService');
 const OAuthImpl = require('../oauth/OAuthImpl');
 
 class BackfillService {
   constructor() {
     this.userAccessTokenService = new UserAccessTokenService();
     this.userService = new UserService();
-    this.partnerService = new PartnerService();
     this.oAuthImpl = new OAuthImpl();
   }
 
@@ -37,7 +35,6 @@ class BackfillService {
   async prepareModelsForOAuthHeader(userAccessToken) {
     this.uat = await this.userAccessTokenService.findByUat(userAccessToken);
     this.user = await this.userService.findByUserId(this.uat.userId);
-    this.partner = await this.partnerService.findByPartnerId(this.user.partnerId);
   }
 
   determineSummaryDomainForBackfillRequest(summaryTitle) {

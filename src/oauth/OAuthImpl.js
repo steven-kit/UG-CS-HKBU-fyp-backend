@@ -6,6 +6,7 @@ class OAuthImpl {
   constructor() {
     this.consumerKey = process.env.CONSUMER_KEY;
     this.consumerSecret = process.env.CONSUMER_SECRET;
+    
     this.oauthRequestTokenUrl = process.env.OAUTH_REQUEST_TOKEN_URL;
     this.oauthConfirmUrl = process.env.OAUTH_CONFIRM_URL;
     this.oauthAccessTokenUrl = process.env.OAUTH_ACCESS_TOKEN_URL;
@@ -21,6 +22,8 @@ class OAuthImpl {
       },
     });
 
+    this.requestToken = null;
+    this.verifier = null;
     this.accessToken = null;
     this.request = null;
   }

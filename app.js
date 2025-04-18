@@ -1,3 +1,4 @@
+require('dotenv').config();
 require('./utils/db');
 
 var createError = require('http-errors');
@@ -26,31 +27,35 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'grant', resave: false, saveUninitialized: true }));
 
 // Grant configuration
 const grantConfig = {
   "defaults": {
     "protocol": "https",
-    // "host": "localhost:3000",
     "host": "emi-backend.azurewebsites.net",
     "transport": "session",
     "state": true
   },
   "garmin": {
-    // "request_url": process.env.OAUTH_REQUEST_TOKEN_URL,
-    // "authorize_url": process.env.OAUTH_CONFIRM_URL,
-    // "access_url": process.env.OAUTH_ACCESS_TOKEN_URL,
+    "request_url": process.env.OAUTH_REQUEST_TOKEN_URL,
+    "authorize_url": process.env.OAUTH_CONFIRM_URL,
+    "access_url": process.env.OAUTH_ACCESS_TOKEN_URL,
     "oauth": 1,
     "key": process.env.CONSUMER_KEY,
     "secret": process.env.CONSUMER_SECRET,
-    "callback": "/oauth/handle_garmin_callback"
+    "callback": "https://emi-backend.azurewebsites.net/oauth/handle_garmin_callback"
   }
 };
 
+console.log('Grant Config:', grantConfig);
+
+app.use(session({ secret: 'grant', 
+  resave: false, 
+  saveUninitialized: true
+ }));
 app.use(grant(grantConfig));
 
-app.use('/', OAuthController);
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/user', userApiRouter);
 app.use('/backfill', backfillRouter);

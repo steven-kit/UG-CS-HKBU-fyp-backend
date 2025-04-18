@@ -1,17 +1,17 @@
+require('dotenv').config();
 const axios = require('axios');
 const Consts = require('../common/Consts');
+const OAuthImpl = require('../oauth/OAuthImpl');
 const UserAccessTokenService = require('../common/services/UserAccessTokenService');
 const UserService = require('../common/services/UserService');
-const PartnerService = require('../common/services/PartnerService');
-const OAuthImpl = require('../oauth/OAuthImpl');
 
 class UserApiService {
   constructor() {
-    this.oAuthImpl = new OAuthImpl();
-    this.partnerService = new PartnerService();
     this.userService = new UserService();
     this.deregistrationUrl = process.env.DEREGISTRATION_URL;
     this.retrieveuserIdUrl = process.env.RETRIEVEUSERID_URL;
+
+    this.oAuthImpl = new OAuthImpl();
   }
 
   async deregisterUser(uat) {
@@ -42,37 +42,62 @@ class UserApiService {
   }
 
   createOAuthRetrieveUserIdRequest(uat) {
-    let partner = {};
+    if (!uat || !uat.uat || !uat.uatSecret) {
+      throw new Error("Invalid UAT object. Ensure that 'uat' and 'uatSecret' are provided.");
+    }
+
     let user = {};
 
     try {
       user = this.userService.findByUserId(uat.userId);
-      partner = this.partnerService.findByPartnerId(user.partnerId);
     } catch (error) {
       console.error("There was an error setting up the models for the user service endpoints. Ensure that user is present in DB.\n" + error.message);
     }
 
-    this.oAuthImpl.setService(partner.consumerKey, partner.consumerSecret);
+    this.oAuthImpl.setService(process.env.CONSUMER_KEY, process.env.CONSUMER_SECRET);
     this.oAuthImpl.createOAuthAccessToken(uat.uat, uat.uatSecret);
-    this.oAuthImpl.createOAuthGetRequest(this.retrieveuserIdUrl);
-    this.oAuthImpl.getService().signRequest(this.oAuthImpl.getAccessToken(), this.oAuthImpl.getRequest());
+
+    const request = this.oAuthImpl.createOAuthGetRequest(this.retrieveuserIdUrl);
+
+    // Generate OAuth headers
+    const headers = this.oAuthImpl.getService().toHeader(
+      this.oAuthImpl.getService().authorize(request, this.oAuthImpl.getAccessToken())
+    );
+
+    // Attach headers to the request
+    request.headers = headers;
+
+    // Save the request in the OAuthImpl instance
+    this.oAuthImpl.setRequest(request);
   }
 
   createOAuthDeregisterRequest(uat) {
-    let partner = {};
+    if (!uat || !uat.uat || !uat.uatSecret) {
+      throw new Error("Invalid UAT object. Ensure that 'uat' and 'uatSecret' are provided.");
+    }
     let user = {};
 
     try {
       user = this.userService.findByUserId(uat.userId);
-      partner = this.partnerService.findByPartnerId(user.partnerId);
     } catch (error) {
       console.error("There was an error setting up the models for the user service endpoints. Ensure that user is present in DB.\n" + error.message);
     }
 
-    this.oAuthImpl.setService(partner.consumerKey, partner.consumerSecret);
+    this.oAuthImpl.setService(process.env.CONSUMER_KEY, process.env.CONSUMER_SECRET);
     this.oAuthImpl.createOAuthAccessToken(uat.uat, uat.uatSecret);
-    this.oAuthImpl.createOAuthDeleteRequest(this.deregistrationUrl);
-    this.oAuthImpl.getService().signRequest(this.oAuthImpl.getAccessToken(), this.oAuthImpl.getRequest());
+    
+    const request = this.oAuthImpl.createOAuthDeleteRequest(this.deregistrationUrl);
+
+    // Generate OAuth headers
+    const headers = this.oAuthImpl.getService().toHeader(
+      this.oAuthImpl.getService().authorize(request, this.oAuthImpl.getAccessToken())
+    );
+
+    // Attach headers to the request
+    request.headers = headers;
+
+    // Save the request in the OAuthImpl instance
+    this.oAuthImpl.setRequest(request);
   }
 
   async sendDeregisterRequestToGarmin() {
@@ -120,7 +145,10 @@ class UserApiService {
 
   async parseUserIdFromJson(retrieveUserIdResponse) {
     try {
-      const json = JSON.parse(retrieveUserIdResponse);
+      const json = typeof retrieveUserIdResponse === 'string' 
+      ? JSON.parse(retrieveUserIdResponse) 
+      : retrieveUserIdResponse;
+
       if (json.userId) {
         return json.userId;
       } else {

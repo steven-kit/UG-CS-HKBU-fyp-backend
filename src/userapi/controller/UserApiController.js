@@ -18,6 +18,7 @@ router.get('/deregister', async (req, res) => {
     let uat = await userAccessTokenService.findByUat(userAccessToken);
 
     const response = await userApiService.deregisterUser(uat);
+    console.log("Response from deregisterUser:", response);
     res.status(response.status).send(response.message);
   } catch (error) {
     console.error(error);

@@ -10,7 +10,7 @@ class UserAccessTokenService {
   }
 
   findByUat(userAccessToken) {
-    return this.userAccessTokenRepository.findByUat(userAccessToken.uat);
+    return this.userAccessTokenRepository.findByUat(userAccessToken);
   }
 
   verifyUniqueUserAccessToken(uat) {
