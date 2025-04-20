@@ -12,7 +12,11 @@ class UserRepository {
   }
 
   async findByUserId(userId) {
-    return await User.findOne({ _id: userId });
+    return await User.findOne({ userId: userId });
+  }
+
+  async deleteByUserId(userId) {
+    return await User.deleteOne({ userId: userId });
   }
 }
 

@@ -18,7 +18,7 @@ class UserApiService {
     this.createOAuthDeregisterRequest(uat);
 
     try {
-      return await this.sendDeregisterRequestToGarmin();
+      return await this.sendDeregisterRequestToGarmin(uat);
     } catch (error) {
       console.error("There was an error in sending the deregistration request to Garmin.\n" + error.message);
       return { status: 500, message: "There was an error in deregistering the user." };
@@ -81,6 +81,7 @@ class UserApiService {
       user = this.userService.findByUserId(uat.userId);
     } catch (error) {
       console.error("There was an error setting up the models for the user service endpoints. Ensure that user is present in DB.\n" + error.message);
+      return { status: 404, message: "User not found for the provided user identifier."};
     }
 
     this.oAuthImpl.setService(process.env.CONSUMER_KEY, process.env.CONSUMER_SECRET);
@@ -111,14 +112,40 @@ class UserApiService {
 
       if (response.status === 204) {
         console.info("Received 204 response from Garmin for deregistering user.");
+
+        // Delete the user and associated UAT from the database
+        const uat = this.oAuthImpl.getAccessToken();
+        console.info("Deleting UAT and associated user from the database:", uat);
+
+        // Delete the associated user
+        const dbUAT = await new UserAccessTokenService().userAccessTokenRepository.findByUat(uat.key);
+
+        const user = await new UserService().userRepository.findByUserId(dbUAT.userId);
+        if (user) {
+          await new UserService().userRepository.deleteByUserId(user.userId);
+          console.info("Deleted user with ID:", user.userId);
+        }
+        // Delete the UAT
+        await new UserAccessTokenService().userAccessTokenRepository.deleteByUat(uat.key);
+
         return { status: 204, message: "Received success response from Garmin for user api request." };
       } else {
         console.warn("Did NOT receive 204 response from Garmin. Received: " + response.status);
         return { status: 400, message: "Received no success response from Garmin for user api request." };
       }
     } catch (error) {
-      console.error("There was an error sending the deregistration request to Garmin.\n" + error.message);
-      return { status: 500, message: "There was an error sending the deregistration request to Garmin." };
+      console.error("There was an error sending the deregistration request to Garmin.");
+      if (error.response) {
+        console.error("Error response from Garmin:", error.response.data);
+        console.error("HTTP Status Code:", error.response.status);
+        return { status: error.response.status, message: error.response.data };
+      } else if (error.request) {
+        console.error("No response received from Garmin. Request details:", error.request);
+        return { status: error.response.status, message: error.request };
+      } else {
+        console.error("Error message:", error.message || "No error message available.");
+        return { status: error.response.status, message: error.message };
+      }
     }
   }
 

@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/cecbac17-ca51-4a74-aafd-36dd18c4296b/resourceGroups/appsvc_linux_eastus/providers/Microsoft.Web/sites/emier-backend",
+    "appService.deploySubpath": "."
+}

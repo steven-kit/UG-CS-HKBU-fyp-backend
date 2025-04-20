@@ -9,6 +9,10 @@ class UserAccessTokenRepository {
   async findByUat(uat) {
     return await UserAccessToken.findOne({ uat: uat });
   }
+  
+  async deleteByUat(uat) {
+    return await UserAccessToken.deleteOne({ uat: uat });
+  }
 
   async verifyUniqueUserAccessToken(uat) {
     const count = await UserAccessToken.countDocuments({ uat: uat });

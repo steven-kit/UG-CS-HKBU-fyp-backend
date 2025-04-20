@@ -22,6 +22,10 @@ const oauth = OAuth({
   },
 });
 
+router.get('/connect/garmin', async (req, res) => {
+  res.redirect('/connect/garmin');
+});
+
 router.get('/handle_garmin_callback', async (req, res) => {
   try {
     console.log('Handling Garmin callback...');
@@ -53,7 +57,7 @@ router.get('/handle_garmin_callback', async (req, res) => {
         .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(oauthParams[key])}`)
         .join('&')
     )}`;
-    console.log('Custom Signature Base String:', baseString);
+    console.log('Base String:', baseString);
 
     const signingKey = `${process.env.CONSUMER_SECRET}&${oauth_token_secret}`;
     console.log('Signing Key:', signingKey);
@@ -74,31 +78,33 @@ router.get('/handle_garmin_callback', async (req, res) => {
 
     console.log('Access Token:', access_token);
     console.log('Access Secret:', access_secret);
-
-    // Save access token and secret in database
+  
     const user = {
-      gcpsUserAcctId: uuidv4()
+      gcpsUserAcctId: uuidv4(),
     };
-
+  
     const savedUser = await userService.saveUser(user);
-
+  
     const userAccessToken = {
       uat: access_token,
       uatSecret: access_secret,
       userId: savedUser.userId,
     };
-
+  
     if (await userAccessTokenService.verifyUniqueUserAccessToken(userAccessToken.uat)) {
       await userAccessTokenService.saveUserAccessToken(userAccessToken);
       console.info(`User access token: ${userAccessToken.uat} and user access token secret: ${userAccessToken.uatSecret} were added for user: ${savedUser.userId}`);
     } else {
       console.warn(`UAT: ${access_token} is already present in the DB. Will not put duplicate UATs.`);
     }
-
-    res.send('OAuth process completed successfully.');
+  
+    res.redirect(`myapp://oauth-success?uat=${access_token}`);
   } catch (error) {
     console.error('Error:', error.response?.data || error.message);
-    res.status(500).send('There was an error in the OAuth process.');
+    res.status(500).send({
+      message: 'There was an error in the OAuth process.',
+      error: error.response?.data || error.message,
+    });
   }
 });
 

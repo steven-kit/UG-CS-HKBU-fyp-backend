@@ -17,8 +17,11 @@ router.get('/deregister', async (req, res) => {
     const userAccessToken = req.query.userAccessToken;
     let uat = await userAccessTokenService.findByUat(userAccessToken);
 
+    if (!uat) {
+      return res.status(404).send('User not found for the provided access token.');
+    }
+
     const response = await userApiService.deregisterUser(uat);
-    console.log("Response from deregisterUser:", response);
     res.status(response.status).send(response.message);
   } catch (error) {
     console.error(error);
@@ -31,8 +34,13 @@ router.get('/getUserId', async (req, res) => {
     const userAccessToken = req.query.userAccessToken;
     let uat = await userAccessTokenService.findByUat(userAccessToken);
 
+    if (!uat) {
+      return res.status(404).send('User not found for the provided access token.');
+    }
+
     const response = await userApiService.retrieveUserId(uat);
     res.status(response.status).send(response.message);
+
   } catch (error) {
     console.error(error);
     res.status(500).send('There was a problem retrieving the user ID.');

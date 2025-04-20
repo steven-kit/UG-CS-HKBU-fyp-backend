@@ -13,6 +13,7 @@ const grant = require('grant').express();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var userApiRouter = require('./src/userapi/controller/UserApiController');
+var stressApiRouter = require('./src/stressapi/controller/StressApiController');
 var backfillRouter = require('./src/backfillapi/controller/BackfillController');
 var OAuthController = require('./src/oauth/controller/OAuthController');
 
@@ -32,7 +33,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 const grantConfig = {
   "defaults": {
     "protocol": "https",
-    "host": "emi-backend.azurewebsites.net",
+    "host": "emier-backend-caacbzexavbfa7gn.eastus-01.azurewebsites.net",
+    // "protocol": "http",
+    // "host": "localhost:3000",
     "transport": "session",
     "state": true
   },
@@ -43,7 +46,8 @@ const grantConfig = {
     "oauth": 1,
     "key": process.env.CONSUMER_KEY,
     "secret": process.env.CONSUMER_SECRET,
-    "callback": "https://emi-backend.azurewebsites.net/oauth/handle_garmin_callback"
+    // "callback": "http://localhost:3000/oauth/handle_garmin_callback",
+    "callback": "https://emier-backend-caacbzexavbfa7gn.eastus-01.azurewebsites.net/oauth/handle_garmin_callback"
   }
 };
 
@@ -58,6 +62,7 @@ app.use(grant(grantConfig));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/user', userApiRouter);
+app.use('/stress', stressApiRouter);
 app.use('/backfill', backfillRouter);
 app.use('/oauth', OAuthController);
 

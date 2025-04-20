@@ -7,6 +7,7 @@ const Consts = {
     ACTIVITIES: "activities",
     DAILIES: "dailies",
     THIRD_PARTY_DAILIES: "thirdPartyDailies",
+    EPOCHS: "epochs",
     SLEEPS: "sleeps",
     BODYCOMPS: "bodyComps",
     MOVEIQ: "moveIQ",
