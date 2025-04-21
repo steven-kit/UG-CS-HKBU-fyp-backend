@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const UserAccessToken = require('../models/UserAccessToken');
 
 class UserAccessTokenRepository {

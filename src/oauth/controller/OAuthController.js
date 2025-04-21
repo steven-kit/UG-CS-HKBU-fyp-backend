@@ -80,7 +80,7 @@ router.get('/handle_garmin_callback', async (req, res) => {
     console.log('Access Secret:', access_secret);
   
     const user = {
-      gcpsUserAcctId: uuidv4(),
+      uat: access_token,
     };
   
     const savedUser = await userService.saveUser(user);

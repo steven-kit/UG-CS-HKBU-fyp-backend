@@ -39,16 +39,10 @@ class BackfillService {
 
   determineSummaryDomainForBackfillRequest(summaryTitle) {
     switch (summaryTitle) {
-      case Consts.ACTIVITIES:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/activities';
-      case Consts.BODYCOMPS:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/bodyComps';
       case Consts.DAILIES:
         return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/dailies';
       case Consts.EPOCHS:
         return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/epochs';
-      case Consts.SLEEPS:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/sleeps';
       case Consts.STRESS:
         return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/stressDetails';
       default:

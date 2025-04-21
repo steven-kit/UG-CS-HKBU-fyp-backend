@@ -11,7 +11,6 @@ const session = require('express-session');
 const grant = require('grant').express();
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var userApiRouter = require('./src/userapi/controller/UserApiController');
 var stressApiRouter = require('./src/stressapi/controller/StressApiController');
 var backfillRouter = require('./src/backfillapi/controller/BackfillController');
@@ -60,7 +59,6 @@ app.use(session({ secret: 'grant',
 app.use(grant(grantConfig));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/user', userApiRouter);
 app.use('/stress', stressApiRouter);
 app.use('/backfill', backfillRouter);

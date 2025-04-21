@@ -1,17 +1,15 @@
 require('dotenv').config();
 const axios = require('axios');
-const Consts = require('../common/Consts');
 const OAuthImpl = require('../oauth/OAuthImpl');
 const UserAccessTokenService = require('../common/services/UserAccessTokenService');
 const UserService = require('../common/services/UserService');
 
 class UserApiService {
   constructor() {
+    this.oAuthImpl = new OAuthImpl();
     this.userService = new UserService();
     this.deregistrationUrl = process.env.DEREGISTRATION_URL;
     this.retrieveuserIdUrl = process.env.RETRIEVEUSERID_URL;
-
-    this.oAuthImpl = new OAuthImpl();
   }
 
   async deregisterUser(uat) {

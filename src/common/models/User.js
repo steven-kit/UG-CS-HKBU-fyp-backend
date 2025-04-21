@@ -6,9 +6,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
   },
-  gcpsUserAcctId: {
+  uat: {
     type: String,
     required: true,
+    ref: 'UserAccessToken'
   }
 });
 

@@ -1,24 +1,49 @@
+const path = require('path');
+const Consts = require(path.join(process.cwd(), 'src/common/Consts'));
 const express = require('express');
 const router = express.Router();
+const StressApiService = require('../StressApiService');
 
-router.post('/data', async (req, res) => {
+
+const stressApiService = new StressApiService();
+
+router.get('/test', (req, res) => {
+  res.send('Hello. This stress test endpoint is working');
+});
+
+router.post('/dailies', async (req, res) => {
   try {
-    console.log('Received stress data push notification from Garmin.');
-    const stressData = req.body;
+    console.info('Dailies endpoint ping notification received');
 
-    // Validate and process the stress data
-    if (!stressData || !Array.isArray(stressData)) {
-      return res.status(400).send('Invalid stress data.');
-    }
+    const dailies = req.body.dailies;
+    dailies.summaryTitle = Consts.DAILIES;
 
-    // Process and store the stress data
-    console.log('Processing stress data:', stressData);
-    // TODO: Add logic to save stress data to your database
+    // Call the service to handle the ping notification
+    const response = await stressApiService.sendAppropriateResponseToGarminApi(dailies);
 
-    res.status(200).send('Stress data processed successfully: ', stressData);
+    // Return the response from the service
+    res.status(response.status).json({ message: response.message });
   } catch (error) {
-    console.error('Error processing stress data:', error.message);
-    res.status(500).send('There was a problem processing the stress data.');
+    console.error('Error handling dailies ping notification:', error.message);
+    res.status(500).json({ message: 'Error handling dailies ping notification', error: error.message });
+  }
+});
+
+router.post('/details', async (req, res) => {
+  try {
+    console.info('Stress Details endpoint ping notification received');
+
+    const stressDetails = req.body.stressDetails;
+    stressDetails.summaryTitle = Consts.STRESSDETAILS;
+
+    // Call the service to handle the ping notification
+    const response = await stressApiService.sendAppropriateResponseToGarminApi(stressDetails);
+
+    // Return the response from the service
+    res.status(response.status).json({ message: response.message });
+  } catch (error) {
+    console.error('Error handling dailies ping notification:', error.message);
+    res.status(500).json({ message: 'Error handling dailies ping notification', error: error.message });
   }
 });
 
