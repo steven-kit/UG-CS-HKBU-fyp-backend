@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const stressDataSchema = new mongoose.Schema({
   dailySummaryId: {
     type: String,
-    required: false,
-    unique: true,
+    required: false
   },
   stressSummaryId: {
     type: String,
-    required: false,
-    unique: true,
+    required: false
   },
   calendarDate: {
     type: String,

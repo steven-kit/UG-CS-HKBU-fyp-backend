@@ -13,6 +13,10 @@ class StressDataRepository {
     return await StressData.findOne({ userAccessToken });
   }
 
+  async deleteByUserAccessToken(userAccessToken) {
+    return await StressData.deleteOne({ userAccessToken });
+  }
+
   async save(stressData, options = {}) {
     const { _id, ...dataWithoutId } = stressData.toObject ? stressData.toObject() : stressData;
     return await StressData.findOneAndUpdate(

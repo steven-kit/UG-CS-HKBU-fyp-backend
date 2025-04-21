@@ -17,6 +17,10 @@ class StressDataService {
     return this.stressDataRepository.findByUserAccessToken(userAccessToken);
   }
 
+  deleteByUserAccessToken(userAccessToken) {
+    return this.stressDataRepository.deleteByUserAccessToken(userAccessToken);
+  }
+
   save(stressData, options = {}) {
     return this.stressDataRepository.save(stressData, options);
   }

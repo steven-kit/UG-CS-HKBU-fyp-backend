@@ -13,8 +13,12 @@ class UserService {
     return this.userRepository.save(user);
   }
 
-  findByUserId(user) {
-    return this.userRepository.findByUserId(user.userId);
+  findByUserId(userId) {
+    return this.userRepository.findByUserId(userId);
+  }
+
+  deleteByUserId(userId) {
+    return this.userRepository.deleteByUserId(userId);
   }
 }
 

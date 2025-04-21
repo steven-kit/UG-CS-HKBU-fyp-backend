@@ -1,3 +1,4 @@
+require('dotenv').config();
 const axios = require('axios');
 const Consts = require('../common/Consts'); 
 const UserAccessTokenService = require('../common/services/UserAccessTokenService');
@@ -40,11 +41,11 @@ class BackfillService {
   determineSummaryDomainForBackfillRequest(summaryTitle) {
     switch (summaryTitle) {
       case Consts.DAILIES:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/dailies';
+        return 'https://apis.garmin.com/wellness-api/rest/backfill/dailies';
       case Consts.EPOCHS:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/epochs';
+        return 'https://apis.garmin.com/wellness-api/rest/backfill/epochs';
       case Consts.STRESS:
-        return 'https://healthapitest.garmin.com/wellness-api/rest/backfill/stressDetails';
+        return 'https://apis.garmin.com/wellness-api/rest/backfill/stressDetails';
       default:
         throw new Error(`Couldn't match the summary domain: ${summaryTitle} to a valid backfill domain.`);
     }
@@ -60,17 +61,15 @@ class BackfillService {
   async buildOAuthHeader(fullBackfillUrl) {
     this.oAuthImpl.createOAuthAccessToken(this.uat.uat, this.uat.uatSecret);
     this.oAuthImpl.createOAuthGetRequest(fullBackfillUrl);
-    this.oAuthImpl.setService(this.partner.consumerKey, this.partner.consumerSecret);
+    this.oAuthImpl.setService(process.env.CONSUMER_KEY, process.env.CONSUMER_SECRET);
   }
 
   async sendBackfillRequest(backfillRequest) {
     try {
       console.log('Sending backfill request to Garmin');
-      const response = await axios({
-        method: 'get',
-        url: backfillRequest.url,
-        headers: backfillRequest.headers,
-      });
+      this.oAuthImpl.setRequest(backfillRequest);
+
+      const response = await this.oAuthImpl.sendRequest();
 
       if (response.data === '[]' || !response.data || response.data.length === 0) {
         console.log('Received expected blank response from Garmin.');

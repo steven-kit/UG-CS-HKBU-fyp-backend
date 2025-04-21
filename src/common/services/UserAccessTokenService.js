@@ -9,16 +9,20 @@ class UserAccessTokenService {
     return this.userAccessTokenRepository.findAll();
   }
 
-  findByUat(userAccessToken) {
-    return this.userAccessTokenRepository.findByUat(userAccessToken);
+  findByUat(uat) {
+    return this.userAccessTokenRepository.findByUat(uat);
+  }
+
+  deleteByUat(uat) {
+    return this.userAccessTokenRepository.deleteByUat(uat);
   }
 
   verifyUniqueUserAccessToken(uat) {
     return this.userAccessTokenRepository.verifyUniqueUserAccessToken(uat);
   }
 
-  saveUserAccessToken(userAccessToken) {
-    return this.userAccessTokenRepository.save(userAccessToken);
+  saveUserAccessToken(uat) {
+    return this.userAccessTokenRepository.save(uat);
   }
 }
 

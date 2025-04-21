@@ -50,8 +50,6 @@ const grantConfig = {
   }
 };
 
-console.log('Grant Config:', grantConfig);
-
 app.use(session({ secret: 'grant', 
   resave: false, 
   saveUninitialized: true

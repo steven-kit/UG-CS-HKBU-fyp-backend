@@ -18,8 +18,8 @@ class UserAccessTokenRepository {
     return count === 0;
   }
 
-  async save(userAccessToken) {
-    const newUserAccessToken = new UserAccessToken(userAccessToken);
+  async save(uat) {
+    const newUserAccessToken = new UserAccessToken(uat);
     return await newUserAccessToken.save();
   }
 }

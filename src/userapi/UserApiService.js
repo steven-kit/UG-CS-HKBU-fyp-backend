@@ -3,11 +3,14 @@ const axios = require('axios');
 const OAuthImpl = require('../oauth/OAuthImpl');
 const UserAccessTokenService = require('../common/services/UserAccessTokenService');
 const UserService = require('../common/services/UserService');
+const StressDataService = require('../common/services/StressDataService');
 
 class UserApiService {
   constructor() {
     this.oAuthImpl = new OAuthImpl();
     this.userService = new UserService();
+    this.stressDataService = new StressDataService();
+    this.userAccessTokenService = new UserAccessTokenService();
     this.deregistrationUrl = process.env.DEREGISTRATION_URL;
     this.retrieveuserIdUrl = process.env.RETRIEVEUSERID_URL;
   }
@@ -116,15 +119,18 @@ class UserApiService {
         console.info("Deleting UAT and associated user from the database:", uat);
 
         // Delete the associated user
-        const dbUAT = await new UserAccessTokenService().userAccessTokenRepository.findByUat(uat.key);
+        const dbUAT = await this.userAccessTokenService.findByUat(uat.key);
 
-        const user = await new UserService().userRepository.findByUserId(dbUAT.userId);
+        const user = await this.userService.findByUserId(dbUAT.userId);
         if (user) {
-          await new UserService().userRepository.deleteByUserId(user.userId);
+          await this.userService.deleteByUserId(user.userId);
           console.info("Deleted user with ID:", user.userId);
         }
         // Delete the UAT
-        await new UserAccessTokenService().userAccessTokenRepository.deleteByUat(uat.key);
+        await this.userAccessTokenService.deleteByUat(uat.key);
+
+        // Delete the stress data
+        await this.stressDataService.deleteByUserAccessToken(uat.key);
 
         return { status: 204, message: "Received success response from Garmin for user api request." };
       } else {

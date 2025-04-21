@@ -205,7 +205,28 @@ class StressApiService {
         console.error('Error processing StressData:', error.message);
         throw error;
     }
-}
+ }
+
+//  sendFcmNotification(stressData) {
+//   const latestStressLevel = stressData.latestStressLevel || 0;
+
+//   const message = {
+//     notification: {
+//       title: 'New Stress Data',
+//       body: `${latestStressLevel}`,
+//     },
+//     token: '<FCM_DEVICE_TOKEN>', // Replace with the actual FCM token for the user
+//   };
+
+//   admin.messaging().send(message)
+//     .then((response) => {
+//       console.log('Successfully sent notification:', response);
+//     })
+//     .catch((error) => {
+//       console.error('Error sending notification:', error);
+//     });
+//  }
+
 }
 
 module.exports = StressApiService;
